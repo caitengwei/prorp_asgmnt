@@ -8,4 +8,4 @@ Assignments of [Principles of Reactive Programming](https://class.coursera.org/r
 # Assignments List
 
 1. Recap: Getting Started with Tools -- example
-2. Week 1: Quickcheck -- 
+2. Week 1: Quickcheck -- quickcheck
