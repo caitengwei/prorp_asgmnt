@@ -10,6 +10,7 @@ Assignments of [Principles of Reactive Programming](https://class.coursera.org/r
 1. Recap: Getting Started with Tools -- `example`
 1. Week 1: Quickcheck -- `quickcheck`
 1. Week 2: Calculator -- `calculator`
+⋅⋅* Week 2 Example: Circuit Simulator -- `circuit`
 
 # Notes
 
