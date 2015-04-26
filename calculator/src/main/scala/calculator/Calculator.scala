@@ -11,11 +11,21 @@ final case class Divide(a: Expr, b: Expr) extends Expr
 object Calculator {
   def computeValues(
       namedExpressions: Map[String, Signal[Expr]]): Map[String, Signal[Double]] = {
-    ???
+    namedExpressions map {
+      case (k, v) => (k, Signal(eval(v(), namedExpressions)))
+    }
   }
 
-  def eval(expr: Expr, references: Map[String, Signal[Expr]]): Double = {
-    ???
+  def eval(expr: Expr, ref: Map[String, Signal[Expr]]): Double = {
+    expr match {
+      case Literal(v) => v
+      case Ref(name) => eval(getReferenceExpr(name, ref), ref - name)
+      case Plus(a, b) => eval(a, ref) + eval(b, ref)
+      case Minus(a, b) => eval(a, ref) - eval(b, ref)
+      case Times(a, b) => eval(a, ref) * eval(b, ref)
+      case Divide(a, b) => eval(a, ref) / eval(b, ref)
+      case _ => Double.NaN
+    }
   }
 
   /** Get the Expr for a referenced variables.
