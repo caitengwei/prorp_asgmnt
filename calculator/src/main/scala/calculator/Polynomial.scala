@@ -9,16 +9,14 @@ object Polynomial {
   }
 
   def computeSolutions(a: Signal[Double], b: Signal[Double],
-      c: Signal[Double], delta: Signal[Double]): Signal[Set[Double]] = {
-    def mySqrt(x: Signal[Double]): Signal[Double] = {
-      if (x() < 0) Signal(0)
-      else Signal(sqrt(x()))
-    }
-    Signal(
+      c: Signal[Double], delta: Signal[Double]): Signal[Set[Double]] = Signal {
+    if (delta() < 0) {
+      Set()
+    } else {
       Set(
-        (-b() + mySqrt(computeDelta(a, b, c))()) / (2 * a()),
-        (-b() - mySqrt(computeDelta(a, b, c))()) / (2 * a())
+        (-b() + sqrt(delta())) / (2 * a()),
+        (-b() - sqrt(delta())) / (2 * a())
       )
-    )
+    }
   }
 }
