@@ -6,3 +6,6 @@
 */web-ui/
 */out/
 *.iml
+.classpath
+.settings
+.project
