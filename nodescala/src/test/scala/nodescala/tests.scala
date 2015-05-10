@@ -13,7 +13,7 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
-class NodeScalaSuite extends FunSuite {
+class test extends FunSuite {
 
   test("A Future should always be completed") {
     val always = Future.always(517)
@@ -30,7 +30,160 @@ class NodeScalaSuite extends FunSuite {
       case t: TimeoutException => // ok!
     }
   }
+  test("All turns lists of future into future of list") {
+    val futures = List(Future(1), Future(2), Future(3))
+    val no_futures = List(Future(1), Future(2), Future.never[Int], Future(4))
 
+    val rst1 = Future.all(futures)
+    val rst2 = Future.all(no_futures)
+
+    assert(Await.result(rst1, 1 second) == Await.result(Future(List(1, 2, 3)), 1 second))
+    try {
+      Await.result(rst2, 1 second)
+      assert(false)
+    } catch {
+      case t: TimeoutException => // ok!
+    }
+  }
+  test("Any return the first completed one") {
+    val futures = List(Future(1), Future(2), Future.never[Int])
+
+    val rst1 = Future.any(futures)
+    val expected = List(1, 2)
+
+    assert(expected.contains(Await.result(rst1, 1 second)))
+    assert(expected.contains(Await.result(rst1, 1 second)))
+    assert(expected.contains(Await.result(rst1, 1 second)))
+  }
+  test("FutureCompanionOps.delay test") {
+    Await.result(Future.delay(0.3 second), 10 second)
+    try {
+      Await.result(Future.delay(0.3 second), 0.1 second)
+    } catch {
+      case t: TimeoutException => // ok
+      // otherwise do not catch
+    }
+    Await.result(Future.delay(0.1 second), 0.5 second)
+    try {
+      Await.result(Future.delay(0.1 second), 0.05 second)
+    } catch {
+      case t: TimeoutException => // ok
+      // otherwise do not catch
+    }
+  }
+
+  test("FutureOps.now test") {
+    val f = Future( 1 )
+    val g = Future( throw new RuntimeException("Synthetic") )
+    val h = Future( blocking { Thread.sleep(100); 1 } )
+
+    assert(f.now === 1)
+    try {
+      g.now
+    } catch {
+      case e: RuntimeException =>
+        if (e.getMessage() != "Synthetic")
+          assert(false)
+      // else ok
+      // otherwise do not catch
+    }
+    try {
+      h.now
+    } catch {
+      case e: NoSuchElementException => // ok
+    }
+  }
+  test("FutureOps.continueWith test") {
+    def contCareless(a: Future[Int]): String = (Await.result(a, 1 second) + 1).toString
+    val f = Future( 1 )
+    assert(Await.result(f.continueWith(contCareless), 1 second) === "2")
+
+    def contThrow(a: Future[Int]): String = throw new RuntimeException("Synthetic")
+    try Await.result(f.continueWith(contThrow), 1 second) catch {
+      case e: RuntimeException =>
+        if (e.getMessage() != "Synthetic")
+          assert(false)
+      // else ok
+      // otherwise do not catch
+    }
+
+    val g: Future[Int] = Future( throw new RuntimeException("g failed") )
+    try Await.result(g.continueWith(contCareless), 1 second) catch {
+      case e: RuntimeException =>
+        if (e.getMessage() != "g failed")
+          assert(false)
+      // else ok
+      // otherwise do not catch
+    }
+
+    def contThrow2(a: Future[Int]): String = try {
+      (Await.result(a, 1 second) + 1).toString
+    } catch {
+      case _:Exception => throw new RuntimeException("Supressed")
+    }
+    try Await.result(g.continueWith(contThrow2), 1 second) catch {
+      case e: RuntimeException =>
+        if (e.getMessage() != "Supressed")
+          assert(false)
+      // else ok
+      // otherwise do not catch
+    }
+    assert(Await.result(f.continueWith(contThrow2), 1 second) === "2")
+  }
+
+  test("FutureOps.continue test") {
+    def contCareless(a: Try[Int]): String = (a.get + 1).toString
+    val f = Future( 1 )
+    assert(Await.result(f.continue(contCareless), 1 second) === "2")
+
+    def contThrow(a: Try[Int]): String = throw new RuntimeException("Synthetic")
+    try Await.result(f.continue(contThrow), 1 second) catch {
+      case e: RuntimeException =>
+        if (e.getMessage() != "Synthetic")
+          assert(false)
+      // else ok
+      // otherwise do not catch
+    }
+
+    val g: Future[Int] = Future( throw new RuntimeException("g failed") )
+    try Await.result(g.continue(contCareless), 1 second) catch {
+      case e: RuntimeException =>
+        if (e.getMessage() != "g failed")
+          assert(false)
+      // else ok
+      // otherwise do not catch
+    }
+
+    def contThrow2(a: Try[Int]): String = a match {
+      case Success(x) => (x + 1).toString
+      case Failure(_) => throw new RuntimeException("Supressed")
+    }
+    try Await.result(g.continue(contThrow2), 1 second) catch {
+      case e: RuntimeException =>
+        if (e.getMessage() != "Supressed")
+          assert(false)
+      // else ok
+      // otherwise do not catch
+    }
+    assert(Await.result(f.continue(contThrow2), 1 second) === "2")
+  }
+  test("FutureCompanionOps.run test") {
+    val p = Promise[String]()
+    val working = Future.run() { ct =>
+      Future {
+        while (ct.nonCancelled) {
+          Thread.sleep(100)
+          println("working")
+        }
+        println("done")
+        p.success("done")
+      }
+    }
+    Future.delay(.5 seconds) onSuccess {
+      case _ => working.unsubscribe()
+    }
+    assert(Await.result(p.future, 1 second) == "done")
+  }
   test("CancellationTokenSource should allow stopping the computation") {
     val cts = CancellationTokenSource()
     val ct = cts.cancellationToken
