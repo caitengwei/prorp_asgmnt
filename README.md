@@ -13,6 +13,7 @@ Assignments of [Principles of Reactive Programming](https://class.coursera.org/r
 	* Example: Circuit Simulator -- `circuit`
 	* Assignment: Calculator -- `calculator`
 1. Week 3: NodeScala -- `nodescala`
+1. Week 4: Wikipedia Suggestions -- `suggestions`
 
 # Notes
 
