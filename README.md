@@ -14,6 +14,7 @@ Assignments of [Principles of Reactive Programming](https://class.coursera.org/r
 	* Assignment: Calculator -- `calculator`
 1. Week 3: NodeScala -- `nodescala`
 1. Week 4: Wikipedia Suggestions -- `suggestions`
+1. Week 5: Actor Binary Tree -- `actorbintree`
 
 # Notes
 
