@@ -53,9 +53,9 @@ class BinaryTreeSuite(_system: ActorSystem) extends TestKit(_system) with FunSui
     expectMsg(ContainsResult(1, false))
 
     topNode ! Insert(testActor, id = 2, 1)
-    topNode ! Contains(testActor, id = 3, 1)
-
     expectMsg(OperationFinished(2))
+
+    topNode ! Contains(testActor, id = 3, 1)
     expectMsg(ContainsResult(3, true))
   }
 
