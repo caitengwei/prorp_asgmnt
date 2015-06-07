@@ -15,6 +15,7 @@ Assignments of [Principles of Reactive Programming](https://class.coursera.org/r
 1. Week 3: NodeScala -- `nodescala`
 1. Week 4: Wikipedia Suggestions -- `suggestions`
 1. Week 5: Actor Binary Tree -- `actorbintree`
+1. Week 6: Replicated KV Store -- `kvstore`
 
 # Notes
 
