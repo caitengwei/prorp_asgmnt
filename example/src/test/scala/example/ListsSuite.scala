@@ -1,7 +1,6 @@
 package example
 
 import org.scalatest.FunSuite
-
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 
@@ -19,12 +18,13 @@ import org.scalatest.junit.JUnitRunner
  * inside eclipse using the built-in JUnit test runner.
  *
  * You have two options for running this test suite:
- * 
+ *
  * - Start the sbt console and run the "test" command
  * - Right-click this file in eclipse and chose "Run As" - "JUnit Test"
  */
-@RunWith(classOf[JUnitRunner])
-class ListsSuite extends FunSuite {
+ @RunWith(classOf[JUnitRunner])
+  class ListsSuite extends FunSuite {
+ 
   /**
    * Tests are written using the `test` operator which takes two arguments:
    *
@@ -38,6 +38,7 @@ class ListsSuite extends FunSuite {
    */
   test("one plus one is two")(assert(1 + 1 == 2))
 
+
   /**
    * In Scala, it is allowed to pass an argument to a method using the block
    * syntax, i.e. `{ argument }` instead of parentheses `(argument)`.
@@ -45,8 +46,9 @@ class ListsSuite extends FunSuite {
    * This allows tests to be written in a more readable manner:
    */
   test("one plus one is three?") {
-    assert(1 + 1 == 2) // This assertion fails! Go ahead and fix it.
+    assert(1 + 1 == 3) // This assertion fails! Go ahead and fix it.
   }
+
 
   /**
    * One problem with the previous (failing) test is that ScalaTest will
@@ -69,7 +71,7 @@ class ListsSuite extends FunSuite {
    * We recommend to always use the `===` equality operator when writing tests.
    */
   test("details why one plus one is not three") {
-    assert(1 + 1 === 2) // Fix me, please!
+    assert(1 + 1 === 3) // Fix me, please!
   }
 
   /**
@@ -95,9 +97,9 @@ class ListsSuite extends FunSuite {
    * Now we finally write some tests for the list functions that have to be
    * implemented for this assignment. We fist import all members of the
    * `List` object.
-   */ 
+   */
   import Lists._
-  
+
 
   /**
    * We only provide two very basic tests for you. Write more tests to make
@@ -113,8 +115,11 @@ class ListsSuite extends FunSuite {
   test("sum of a few numbers") {
     assert(sum(List(1,2,0)) === 3)
   }
+
   test("max of a few numbers") {
     assert(max(List(3, 7, 2)) === 7)
   }
+
+
 
 }
